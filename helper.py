@@ -8,7 +8,7 @@ from selenium import webdriver
 #from bs4 import BeautifulSoup # For HTML parsing
 from time import sleep # To prevent overwhelming the server between connections
 from collections import Counter # Keep track of our term counts
-from nltk.corpus import stopwords # Filter out stopwords, such as 'the', 'or', 'and'
+import nltk # Filter out stopwords, such as 'the', 'or', 'and'
 import pandas as pd # For converting results to a dataframe and bar chart plots
 from selenium.webdriver.common import action_chains, keys
 from selenium.common.exceptions import NoSuchElementException
@@ -24,6 +24,7 @@ import warnings
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 warnings.filterwarnings("ignore", message="numpy.ufunc size changed")
 
+nltk.download('stopwords')
 def init_driver():
     ''' Initialize chrome driver'''
 
@@ -178,11 +179,11 @@ def searchJobs(browser, jobName, city=None, jobDict = None, link=None):
         # Find brief description
 
 
-        for i in range(20): #20  ####&&&&
+        for i in range(1): #20  ####&&&&
             try:
                 # Extract useful classes
                 jobPosting =browser.find_elements_by_class_name('jl')
-                sleep(get_pause())
+                sleep(10)
 
                 # Create a job Dictionary. Every job in glassDoor has a unique data-id.
                 # data-id should be used as key for the dictionary

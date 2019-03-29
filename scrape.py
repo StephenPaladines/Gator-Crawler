@@ -2,7 +2,7 @@ from selenium import webdriver
 #from bs4 import BeautifulSoup # For HTML parsing
 from time import sleep # To prevent overwhelming the server between connections
 from collections import Counter # Keep track of our term counts
-from nltk.corpus import stopwords # Filter out stopwords, such as 'the', 'or', 'and'
+import nltk # Filter out stopwords, such as 'the', 'or', 'and'
 import pandas as pd # For converting results to a dataframe and bar chart plots
 from selenium.webdriver.common import action_chains, keys
 from selenium.common.exceptions import NoSuchElementException
@@ -12,10 +12,10 @@ import re
 import warnings
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 warnings.filterwarnings("ignore", message="numpy.ufunc size changed")
-
+nltk.download('stopwords')
 # call the helper
 
-from helper import load_obj, get_csv,save_obj, init_driver, searchJobs, text_cleaner, get_pause, \
+from helper import load_obj, get_csv, save_obj, init_driver, searchJobs, text_cleaner, get_pause, \
 string_from_text
 
 # 1- Load existing dictionary. Check for initial dictionary.
@@ -30,7 +30,6 @@ except:
 
 	jobDict = load_obj('glassDoorDict')
 	link =    load_obj('glassDoorlink')
-	resultSearch = get_csv(jobDict)
 
 print('len(jobDict) = '+str(len(jobDict))+ ', len(link) = '+str(len(link)))
 
@@ -43,7 +42,7 @@ get_link = True ####&&&&
 #get_link = False
 
 
-get_data = (not get_link) # either get_link or get_data
+get_data = True # either get_link or get_data
 
 if get_link or get_data:
 
@@ -68,7 +67,7 @@ if get_link or get_data:
 
 if get_link :
 	iter_num = 0
-	while iter_num <3: # default 1 ####&&&&
+	while iter_num <1: # default 1 ####&&&&
 		print('Starting iteration number {}'.format(iter_num))
 		sleep(get_pause())
 		
@@ -102,16 +101,17 @@ if get_link :
 
 		save_obj(update_jobDict, 'glassDoorDict')
 		save_obj(update_link, 'glassDoorlink')
+		get_csv('glassDoorDict')
 
 		iter_num += 1
 
-	browser.close()
+	#browser.close()
  # 5- Scrape the job description, for every link
 
 if get_data:
 
 	print('len(link) = '+str(len(link)))
-	while len(link) > 200: # originally 0, a hard coded solution for when only bad links are left.
+	while len(link) > 0: # originally 0, a hard coded solution for when only bad links are left.
 	#for i in range(250): # debugging	####&&&&
 
 		try:
@@ -124,11 +124,11 @@ if get_data:
 
 			browser.get(page)
 			#print(browser)
-			sleep(3)
-
+			sleep(5)
+			
 			# Extract text
 			desc_list = browser.find_element_by_xpath('//*[@id="JobDescriptionContainer"]/div[1]').text
-			#print('desc_list '+ str(type(desc_list)))
+			print('desc_list '+ str(type(desc_list)))
 			description = text_cleaner(desc_list)
 			#description = desc_list
 			#print('description '+ str(type(description)))
@@ -138,7 +138,7 @@ if get_data:
 
 
 			#Additional information about company (size, revenue, industry)
-			sleep(2)
+			sleep(5)
 			try:
 				browser.find_element_by_xpath('//*[@id="JobContent"]//header/ul/li[2]/span').click()
 				tmp_txt = browser.find_element_by_id('EmpBasicInfo').text
@@ -179,6 +179,7 @@ if get_data:
 			#print("Going to save data!!")
 			save_obj(jobDict, 'glassDoorDict')
 			save_obj(link, 'glassDoorlink')
+			
 
 			print('Scraped successfully ' + ids)
 
