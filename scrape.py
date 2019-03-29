@@ -52,9 +52,13 @@ if get_link or get_data:
 	# Initialize the webdriver
 
 	browser = init_driver()
-	browser = webdriver.Chrome()
-	browser.findElement(By.id("userEmail")).sendKeys("vuxizu@virtual-email.com")
-	browser.findElement(By.id("userPassword")).sendKeys("GatorCrawler")
+	browser.get(website)
+	emailUser = browser.find_element_by_id("userEmail")
+	emailUser.send_keys("vuxizu@virtual-email.com")
+	passwordUser = browser.find_element_by_id("userPassword")
+	passwordUser.send_keys("GatorCrawler")
+	button = browser.find_element_by_xpath("//*[@id='InlineLoginModule']/div/div/div[1]/div[4]/form/div[3]/div[1]/button")
+	button.click()
 
 
 # 4- Scrape for links and brief data
@@ -64,7 +68,6 @@ if get_link :
 	while iter_num < 1: # default 1 ####&&&&
 		print('Starting iteration number {}'.format(iter_num))
 		sleep(get_pause())
-		browser.get(website)
 
 		# Initialize cities and jobs
 
@@ -122,10 +125,10 @@ if get_data:
 			
 			# Extract text
 			desc_list = browser.find_element_by_xpath('//*[@id="JobDescriptionContainer"]/div[1]').text
-			print('desc_list '+ str(type(desc_list)))
+			#print('desc_list '+ str(type(desc_list)))
 			description = text_cleaner(desc_list)
 			#description = desc_list
-			#print('description '+ str(type(description)))
+			print('description '+ str(type(description)))
 
 			# jobDict structure {'job_id':['rating','position','company','salary','descr']}
 			jobDict[ids].append(description)
