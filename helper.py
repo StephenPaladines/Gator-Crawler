@@ -14,6 +14,7 @@ from selenium.webdriver.common import action_chains, keys
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from nltk.corpus import stopwords
 import numpy as np
 import pickle
 import re
@@ -24,8 +25,8 @@ import json
 import warnings
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 warnings.filterwarnings("ignore", message="numpy.ufunc size changed")
-
 nltk.download('stopwords')
+
 def init_driver():
     ''' Initialize chrome driver'''
 
@@ -256,23 +257,22 @@ def text_cleaner(text):
     Outputs: Cleaned text only
     '''
     print('starting text_cleaner')
-    stopws = set(stopwords.words("english"))
+    stopws = set(stopwords.words('english'))
     #print('initialized stopws')
-
+    
     lines = (line.strip() for line in text.splitlines()) # break into lines
     #lines = [line.strip() for line in text.splitlines()]
-
+    
     chunks = (phrase.strip() for line in lines for phrase in line.split("  ")) # break multi-headlines into a line each
     #chunks = [phrase.strip() for line in lines for phrase in line.split("  ")]
-
+    
     def chunk_space(chunk):
         chunk_out = chunk + ' ' # Need to fix spacing issue
         return chunk_out
 
     #print('Going for text!')
-    text = ''.join(chunk_space(chunk) for chunk in chunks if chunk).encode('utf-8') # Get rid of all blank lines and ends of line
-
-
+    text = ''.join(chunk_space(chunk) for chunk in chunks if chunk).encode('utf-8') 
+    # Get rid of all blank lines and ends of line
     # Now clean out all of the unicode junk (this line works great!!!)
     #print('cleaning out unicode junc from text!')
     try:
@@ -283,17 +283,12 @@ def text_cleaner(text):
     #print('getting rid of non-words from text!')
     text = re.sub(b"[^a-zA-Z.+3]",b" ", text)  # Now get rid of any terms that aren't words (include 3 for d3.js)
                                                 # Also include + for C++
-
     #print('make text lower case!')
     text = text.lower()  # Go to lower case
-
     #print('split text!')
     text = text.split()  #  and split them apart
-
     #print('removing stop words!')
     text = [w for w in text if not w in stopws]
-
-
     #print('set of text')
     text = list(set(text)) # Last, just get the set of these. Ignore counts
                            # we are just looking at whether a term existed or not on the website
@@ -305,7 +300,10 @@ def text_cleaner(text):
 ##############################################################################
 def string_from_text(pattern, tmp_txt):
     lst  = tmp_txt.split('\n')
-    return [''.join(x.split()[1:]) for x in lst if x.find(pattern) !=-1][0]
+    hq = [''.join(x.split()[0:]) for x in lst if x.find(pattern) !=-1][0]
+    #hq will have the pattern attached to the headquarter location
+    print( hq )
+    return(hq[len(pattern):]) #returns a substring starting from where the last index of pattern ends
 
 ##############################################################################
 

@@ -5,6 +5,7 @@ import nltk 							# Filter out stopwords, such as 'the', 'or', 'and'
 import pandas as pd 					# For converting results to a dataframe and bar chart plots
 from selenium.webdriver.common import action_chains, keys
 from selenium.common.exceptions import NoSuchElementException
+from nltk.corpus import stopwords
 import numpy as np
 import sys
 import re
@@ -127,8 +128,9 @@ if get_data:
 			desc_list = browser.find_element_by_xpath('//*[@id="JobDescriptionContainer"]/div[1]').text
 			print('desc_list '+ str(type(desc_list)))
 			description = text_cleaner(desc_list)
+			#print(desc_list)
 			#description = desc_list
-			print('description '+ str(type(description)))
+			#print('description '+ str(type(description)))
 
 			# jobDict structure {'job_id':['rating','position','company','salary','descr']}
 			jobDict[ids].append(description)
@@ -137,31 +139,34 @@ if get_data:
 			#Additional information about company (size, revenue, industry)
 			sleep(5)
 			try:
-				browser.find_element_by_xpath('//*[@id="JobContent"]//header/ul/li[2]/span').click()
+				browser.find_element_by_xpath('//*[@id="JobDetailsInfo"]/div/header/div/div/div[2]/span').click()
 				tmp_txt = browser.find_element_by_id('EmpBasicInfo').text
-
-				hq_city = string_from_text('Headquarters', tmp_txt).split(',')[0]
+				headQuarter = string_from_text('Headquarters', tmp_txt)
+				#print(tmp_txt)
+				#headQuarter = headQuarter.replace(',','')
+				print(headQuarter)
+				hq_city = headQuarter.split(',')[0]
 				#print('hq_city = ',hq_city)
 				jobDict[ids].append(hq_city)
-				#print(' 1 = ',)
-				hq_state_code = string_from_text('Headquarters', tmp_txt).split(',')[1]
+				print(' 1 = ',)
+				hq_state_code = headQuarter.split(',')[1]
 				#print('hq_state_code = ',hq_state_code)
 				jobDict[ids].append(hq_state_code)
-				#print(' 2 = ',)
+				print(' 2 = ',)
 				#size_low = int(re.findall('\d+',string_from_text('Size',tmp_txt))[0])
-				size = re.findall('\d+',string_from_text('Size',tmp_txt))
+				#size = string_from_text('Size',tmp_txt)
 				#print('size = ', size)
 				#size_high = int(re.findall('\d+',string_from_text('Size',tmp_txt))[1])
 				#print(' = ',)
-				jobDict[ids].append(size)
+				#jobDict[ids].append(size)
 				#print(' 3 = ',)
 				#jobDict[ids].append(size_low)
 				#jobDict[ids].append(size_high)
 				industry = string_from_text('Industry',tmp_txt)
-				#print('industry = ',industry)
+				print('industry = ',industry)
 
 				jobDict[ids].append(industry)
-				#print(' 4 = ',)
+				print(' 4 = ',)
 				#jobDict[ids].append(revenue)
 
 
