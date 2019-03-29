@@ -19,6 +19,7 @@ import pickle
 import re
 import csv
 import os.path
+import json
 #from collections import OrderedDict
 import warnings
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
@@ -51,8 +52,7 @@ def save_obj(obj, name):
 
 def save_obj_json(obj, name):
     with open(name + '.json', 'w') as f:
-        f.write(json)
-        f.close()
+        json.dump(obj,f)
 
 ###############################################################################
 
