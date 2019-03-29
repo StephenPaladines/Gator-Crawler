@@ -14,7 +14,7 @@ warnings.filterwarnings("ignore", message="numpy.ufunc size changed")
 nltk.download('stopwords')
 # call the helper
 
-from helper import load_obj, get_csv, save_obj, init_driver, searchJobs, text_cleaner, get_pause, \
+from helper import load_obj, get_csv, save_obj_json, init_driver, searchJobs, text_cleaner, get_pause, \
 string_from_text
 
 # 1- Load existing dictionary. Check for initial dictionary.
@@ -24,8 +24,8 @@ try:
 	jobDict = load_obj('glassDoorDict')
 	link =    load_obj('glassDoorlink')
 except:
-	save_obj([], 'glassDoorlink')
-	save_obj({}, 'glassDoorDict')
+	save_obj_json([], 'glassDoorlink')
+	save_obj_json({}, 'glassDoorDict')
 
 	jobDict = load_obj('glassDoorDict')
 	link =    load_obj('glassDoorlink')

@@ -1,11 +1,12 @@
 # Gator-Crawler
 
-in order to make the python3 project run, install the following packages with the given commands
+Requirements:
+	In order to make the python3 project run, install the following packages with the given command
+		Run 'pip install -r requirements.txt'
 
-To install all packages, run 'pip install -r requirements.txt'
+	Download chrome driver from 'https://sites.google.com/a/chromium.org/chromedriver/'
+		-Ensure chrome is installed
+		-Add .exe to path
 
-Sudo pip3 install -U nltk
-Sudo pip3 install selenium
-Sudo pip3 install tornado
-Sudo pip3 install nose
-Sudo pip3 install pandas
+
+
