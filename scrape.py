@@ -125,7 +125,7 @@ if get_data:
 			
 			# Extract text
 			desc_list = browser.find_element_by_xpath('//*[@id="JobDescriptionContainer"]/div[1]').text
-			#print('desc_list '+ str(type(desc_list)))
+			print('desc_list '+ str(type(desc_list)))
 			description = text_cleaner(desc_list)
 			#description = desc_list
 			print('description '+ str(type(description)))
