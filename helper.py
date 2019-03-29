@@ -43,13 +43,20 @@ def init_driver():
 
 ##############################################################################
 
-def save_obj(obj, name ):
+def save_obj(obj, name):
     with open(name + '.pkl', 'wb') as f:
         pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
 
 ###############################################################################
 
-def load_obj(name ):
+def save_obj_json(obj, name):
+    with open(name + '.json', 'w') as f:
+        f.write(json)
+        f.close()
+
+###############################################################################
+
+def load_obj(name):
     with open(name + '.pkl', 'rb') as f:
         return pickle.load(f)
 ###############################################################################

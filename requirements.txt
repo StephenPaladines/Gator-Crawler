@@ -2,3 +2,4 @@ selenium
 tornado
 nose
 pandas
+nltk

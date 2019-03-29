@@ -1,9 +1,8 @@
-from selenium import webdriver
-#from bs4 import BeautifulSoup # For HTML parsing
-from time import sleep # To prevent overwhelming the server between connections
-from collections import Counter # Keep track of our term counts
-import nltk # Filter out stopwords, such as 'the', 'or', 'and'
-import pandas as pd # For converting results to a dataframe and bar chart plots
+from selenium import webdriver 			# From bs4 import BeautifulSoup # For HTML parsing
+from time import sleep 					# To prevent overwhelming the server between connections
+from collections import Counter 		# Keep track of our term counts
+import nltk 							# Filter out stopwords, such as 'the', 'or', 'and'
+import pandas as pd 					# For converting results to a dataframe and bar chart plots
 from selenium.webdriver.common import action_chains, keys
 from selenium.common.exceptions import NoSuchElementException
 import numpy as np
@@ -48,22 +47,21 @@ if get_link or get_data:
 
 	# 3- initialize website
 
-	website = "https://www.glassdoor.com/index.html"
+	website = "https://www.glassdoor.com"
 
 	# Initialize the webdriver
 
 	browser = init_driver()
-	#browser = webdriver.Chrome()
-	#browser.findElement(By.id("userEmail")).sendKeys("vuxizu@virtual-email.com")
-	#browser.findElement(By.id("userPassword")).sendKeys("GatorCrawler")
+	browser = webdriver.Chrome()
+	browser.findElement(By.id("userEmail")).sendKeys("vuxizu@virtual-email.com")
+	browser.findElement(By.id("userPassword")).sendKeys("GatorCrawler")
 
 
 # 4- Scrape for links and brief data
 
-
 if get_link :
 	iter_num = 0
-	while iter_num <1: # default 1 ####&&&&
+	while iter_num < 1: # default 1 ####&&&&
 		print('Starting iteration number {}'.format(iter_num))
 		sleep(get_pause())
 		browser.get(website)
@@ -95,9 +93,9 @@ if get_link :
 
 		# save dictionary and link
 
-		save_obj(update_jobDict, 'glassDoorDict')
-		save_obj(update_link, 'glassDoorlink')
-		get_csv('glassDoorDict')
+		save_obj_json(update_jobDict, 'glassDoorDict')
+		save_obj_json(update_link, 'glassDoorlink')
+		# get_csv('glassDoorDict')
 
 		iter_num += 1
 
@@ -172,7 +170,7 @@ if get_data:
 			dummy=link.pop(rnd_job)
 
 			# if everything is fine, save
-			#print("Going to save data!!")
+			# print("Going to save data!!")
 			save_obj(jobDict, 'glassDoorDict')
 			save_obj(link, 'glassDoorlink')
 			
