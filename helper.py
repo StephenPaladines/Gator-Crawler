@@ -29,11 +29,11 @@ def init_driver():
 
     chrome_options = webdriver.ChromeOptions()
 
-    chrome_options.add_argument('--disable-extensions')
+    #chrome_options.add_argument('--disable-extensions')
     chrome_options.add_argument('--profile-directory=Default')
-    #chrome_options.add_argument("--incognito")
-    chrome_options.add_argument("--disable-plugins-discovery")
-    chrome_options.add_argument("--start-maximized")
+    chrome_options.add_argument("--account-consistency")
+    #chrome_options.add_argument("--disable-plugins-discovery")
+    #chrome_options.add_argument("--start-maximized")
     #browser = webdriver.Chrome(driver, chrome_options=chrome_options)
     browser = webdriver.Chrome(chrome_options=chrome_options)
     #browser = webdriver.Chrome()
@@ -158,8 +158,8 @@ def searchJobs(browser, jobName, city=None, jobDict = None, link=None):
     #if q=='y': ####&&&&
     if True:
 
-        job = browser.find_element_by_id("KeywordSearch")  #job title, keywords, or company
-        location = browser.find_element_by_id("LocationSearch") #location search
+        job = browser.find_element_by_id("sc.keyword")  #job title, keywords, or company
+        location = browser.find_element_by_id("sc.location") #location search
         sleep(3)
         job.send_keys(jobName)  #type in job name in search
         sleep(2)

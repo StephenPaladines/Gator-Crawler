@@ -15,7 +15,7 @@ warnings.filterwarnings("ignore", message="numpy.ufunc size changed")
 
 # call the helper
 
-from helper import load_obj, save_obj, init_driver, searchJobs, text_cleaner, get_pause, \
+from helper import load_obj, get_csv,save_obj, init_driver, searchJobs, text_cleaner, get_pause, \
 string_from_text
 
 # 1- Load existing dictionary. Check for initial dictionary.
@@ -30,6 +30,7 @@ except:
 
 	jobDict = load_obj('glassDoorDict')
 	link =    load_obj('glassDoorlink')
+	resultSearch = get_csv(jobDict)
 
 print('len(jobDict) = '+str(len(jobDict))+ ', len(link) = '+str(len(link)))
 
@@ -48,14 +49,18 @@ if get_link or get_data:
 
 	# 3- initialize website
 
-	website = "https://www.glassdoor.com/index.html"
+	website = "https://www.glassdoor.com/profile/login_input.htm?userOriginHook=HEADER_SIGNIN_LINK"
 
 	# Initialize the webdriver
 
 	browser = init_driver()
-	#browser = webdriver.Chrome()
-	#browser.findElement(By.id("userEmail")).sendKeys("vuxizu@virtual-email.com")
-	#browser.findElement(By.id("userPassword")).sendKeys("GatorCrawler")
+	browser.get(website)
+	emailUser = browser.find_element_by_id("userEmail")
+	emailUser.send_keys("vuxizu@virtual-email.com")
+	passwordUser = browser.find_element_by_id("userPassword")
+	passwordUser.send_keys("GatorCrawler")
+	button = browser.find_element_by_xpath("//*[@id='InlineLoginModule']/div/div/div[1]/div[4]/form/div[3]/div[1]/button")
+	button.click()
 
 
 # 4- Scrape for links and brief data
@@ -66,7 +71,7 @@ if get_link :
 	while iter_num <3: # default 1 ####&&&&
 		print('Starting iteration number {}'.format(iter_num))
 		sleep(get_pause())
-		browser.get(website)
+		
 
 		# Initialize cities and jobs
 
