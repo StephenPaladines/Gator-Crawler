@@ -47,7 +47,7 @@ if get_link or get_data:
 
 	# 3- initialize website
 
-	website = "https://www.glassdoor.com"
+	website = "https://www.glassdoor.com/profile/login_input.htm?userOriginHook=HEADER_SIGNIN_LINK"
 
 	# Initialize the webdriver
 
