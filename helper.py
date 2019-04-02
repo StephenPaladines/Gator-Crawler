@@ -1,15 +1,15 @@
-
 """
+
 Inspired by code created by Diego De Lazzari
 Modified for Python 3 by Aungshuman Zaman
+Adapted for obtaining data using ELK by Stephen Paladines & Muhammed Fallah
 
 """
-from selenium import webdriver
-#from bs4 import BeautifulSoup # For HTML parsing
-from time import sleep # To prevent overwhelming the server between connections
-from collections import Counter # Keep track of our term counts
-import nltk # Filter out stopwords, such as 'the', 'or', 'and'
-import pandas as pd # For converting results to a dataframe and bar chart plots
+from selenium import webdriver           # From bs4 import BeautifulSoup # For HTML parsing
+from time import sleep                   # To prevent overwhelming the server between connections
+from collections import Counter          # Keep track of our term counts
+import nltk                              # Filter out stopwords, such as 'the', 'or', 'and'
+import pandas as pd                      # For converting results to a dataframe and bar chart plots
 from selenium.webdriver.common import action_chains, keys
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.ui import WebDriverWait
@@ -88,8 +88,8 @@ def get_csv(pickle_obj):  ####&&&& Don' use it for new files
                 new_dict['description'] = v[5]  #[x.decode('ascii') for x in v[5]]
                 writer.writerow(new_dict.values())
 
-
 ###############################################################################
+
 def get_csv2(pickle_obj): ####&&&& Don' use it for new files
     my_dict = load_obj(pickle_obj)
     csv_filename = 'mycsvfile2.csv'
@@ -157,63 +157,51 @@ def get_csv3(pickle_obj): ####&&&&
 
 ##############################################################################
 
-
-def searchJobs(browser, jobName, city=None, jobDict = None, link=None):
+def searchJobs(browser, jobName, city = None, jobDict = None, link = None):
     '''Scrape for job listing'''
-
-    ####&&&&
-    #q = input('Shall we scrape? (y/n)\n') #q = raw_input('Shall we scrape? (y/n)')
-
-    #if q=='y': ####&&&&
     if True:
-
-        job = browser.find_element_by_id("sc.keyword")  #job title, keywords, or company
-        location = browser.find_element_by_id("sc.location") #location search
+        job = browser.find_element_by_id("sc.keyword")              # Job title, keywords, or company
+        location = browser.find_element_by_id("sc.location")        # Location search
         sleep(3)
-        job.send_keys(jobName)  #type in job name in search
-        sleep(2)
-        #location form is already populated.
-        location.clear()
-        # can also execute JavaScript to clear it
-        #browser.execute_script("arguments[0].value = ''", location)
-        location.send_keys(city) #type in location name in search
 
+        job.send_keys(jobName)                                      # Type in job name in search
         sleep(2)
-        browser.find_element_by_class_name('gd-btn-mkt').click()
 
+        location.clear()                                            # Location form must be cleared since it's already populated.
+        location.send_keys(city)                                    # Type in location name in search
+        sleep(2)
+
+        browser.find_element_by_class_name('gd-btn-mkt').click()    # Seach job button
         sleep(5)
         
 
         # Find brief description
-
-
         for i in range(1): #20  ####&&&&
             try:
                 # Extract useful classes
-                jobPosting =browser.find_elements_by_class_name('jl')
+                jobPosting = browser.find_elements_by_class_name('jl')
                 sleep(10)
 
-                # Create a job Dictionary. Every job in glassDoor has a unique data-id.
-                # data-id should be used as key for the dictionary
-                #create a map of 2-tuple. 2-tuple => data-id and selenium webElement.
+                # Create a job Dictionary based on a unique  (job) data-id as key for the dictionary
+                # Map will consist of a 2-tuple(data-id and selenium webElement (job listing)).
                 jobTuple = map(lambda a: (a.get_attribute('data-id'), a), jobPosting)
 
-                # Filter picks out only those data-ids that are not in jobDict.keys()
-                newPost = list(filter(lambda b: b[0] not in jobDict.keys(),jobTuple) ) #list of 2-tuple
+                # Filter out the job, data-ids that are not present in the Dictionary (jobDict.keys())
+                # Variable will be used to update the job dictionary and job list
+                newPost = list(filter(lambda b: b[0] not in jobDict.keys(), jobTuple) ) #list of 2-tuple
 
-                #If there are new posts, update job dict and link list
+                # If there are new posts, update job dict and link list
                 if newPost != []:
-
-                    # process the tuple
-                    #example of a[1].text ->
-                    #"3.7\nData Scientist, Analytics\nEtsy – Brooklyn, NY\n$114k-$167k  (Glassdoor Est.)\nWe're Hiring"
-                    #tuple structure ('job_id',['rating','position','company','salary'])
-                    #jobData = list(map(lambda a: (a[0],a[1].text.encode("utf8")./
-                        #split('\n')[0:4]),newPost))
-                    #jobData = list(map(lambda a: (a[0],a[1].text.split('\n')[0:4]),newPost))
-                    #jobData = list(map(do_stuff, newPost)) ####&&&&
+                    # Process the tuple
+                    # Example of a[1].text ->
+                    # "3.7\nData Scientist, Analytics\nEtsy – Brooklyn, NY\n$114k-$167k  (Glassdoor Est.)\nWe're Hiring"
+                    # Tuple structure ('job_id',['rating','position','company','salary'])
+                    # JobData = list(map(lambda a: (a[0],a[1].text.encode("utf8")./
+                    # split('\n')[0:4]),newPost))
+                    # JobData = list(map(lambda a: (a[0],a[1].text.split('\n')[0:4]),newPost))
+                    # JobData = list(map(do_stuff, newPost)) ####&&&&
                     # do_stuff returns many misplaced entries.
-                    #do_new_stuff uses regex to minimize bad data, it also splits up entries into more columns
+                    # do_new_stuff uses regex to minimize bad data, it also splits up entries into more columns
                     # new tuple structure ('job_id',[rating, position, company, job_city, job_state_code, sal_low, sal_high])
                     print('starting do_new_stuff')
                     jobData = list(map(do_new_stuff, newPost))
@@ -224,26 +212,23 @@ def searchJobs(browser, jobName, city=None, jobDict = None, link=None):
                     print('updating jobDict')
                     tmp = dict((a[0],a[1]) for a in jobData)
                     print('tmp created')
-                    jobDict.update(tmp) #add a new entry with unique key job_id
-                    # finally find the links:
+                    jobDict.update(tmp) # Add a new entry with unique key job_id
+                    # Finally find the links:
                     link_lst = list(map(lambda c: (c[0],c[1].find_element_by_tag_name('a').\
                         get_attribute('href')), newPost))
-                    #add the link to job dict
+                    # Add the link to job dict
                     print('Adding to link')
                     tmp = [jobDict[c[0]].append(c[1]) for c in link_lst]
-                    # update link list. This will be used in get_data part.
+                    # Update link list. This will be used in get_data part.
                     link += link_lst
-
-
-                browser.find_element_by_class_name('next').click() #next page
+                browser.find_element_by_class_name('next').click() # Next page
                 try:
-                    #browser.find_element_by_class_name('xBtn').click() #pop-up
-                    browser.find_element_by_xpath('//*[@id="JAModal"]/div/div[2]/div').click() #pop up
+                    browser.find_element_by_xpath('//*[@id="JAModal"]/div/div[2]/div').click() # Pop up
                 except:
                     pass
 
             except Exception as e:
-                #pass
+                # Pass
                 print(type(e),e)
 
     return jobDict, link
@@ -298,6 +283,7 @@ def text_cleaner(text):
 
 
 ##############################################################################
+
 def string_from_text(pattern, tmp_txt):
     lst  = tmp_txt.split('\n')
     hq = [''.join(x.split()[0:]) for x in lst if x.find(pattern) !=-1][0]
