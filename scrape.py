@@ -46,7 +46,7 @@ print('len(jobDict) = '+ str(len(jobDict)) + ', len(link) = '+ str(len(link)))
 # get_data => Scraping for detailed data.
 
 
-get_link = True 
+get_link = False 
 get_data = True 
 
 if get_link or get_data:
