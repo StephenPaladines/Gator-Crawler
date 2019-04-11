@@ -107,9 +107,11 @@ if get_link :
  # 5- Scrape the job description for every link
 
 if get_data:
+	i = 5
 	print('len(link) = ' + str(len(link)))
-	while len(link) > 0: # Originally 0, a hard coded solution for when only bad links are left.
+	while i > 0: # Originally 0, a hard coded solution for when only bad links are left.
 		try:
+			i = i-1
 			rnd_job = np.random.choice(range(len(link)))
 			ids = link[rnd_job][0]
 			page = link[rnd_job][1]
