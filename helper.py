@@ -52,7 +52,7 @@ def save_obj(obj, name):
 ###############################################################################
 
 def save_obj_json(obj, name):
-    with open(name + '.json', 'wb') as f:
+    with open(name + '.json', 'w') as f:
         json.dump(obj,f)
 
 ###############################################################################
@@ -313,13 +313,13 @@ def do_new_stuff(a):
     tmp = a[1].text
     raw_rating = re.findall('\d\.\d',tmp )
     print('raw_rating = ',raw_rating)
-    if len(raw_rating)==1:
-        rating =raw_rating[0]
+    if len(raw_rating)== 1:
+        rating = raw_rating[0]
     else:
         rating = ''
     raw_sal_range = re.findall('\d+k',tmp )
     print('raw_sal_range = ',raw_sal_range)
-    if len(raw_sal_range)==2:
+    if len(raw_sal_range)== 2:
         sal_low = int(raw_sal_range[0].replace('k',''))
         sal_high = int(raw_sal_range[1].replace('k',''))
     else:
@@ -327,7 +327,7 @@ def do_new_stuff(a):
         sal_high = np.nan
     raw_company = re.findall('.+–.+,.+',tmp)
     print('raw_company = ',raw_company)
-    if len(raw_company)==1:
+    if len(raw_company)== 1:
         tt = raw_company[0].split('–')
         company = tt[0].strip()
         job_city = tt[1].split(',')[0].strip()
@@ -338,7 +338,7 @@ def do_new_stuff(a):
         job_state_code = ''
     raw_position = re.findall('(.+sci.+|.+ana.+|.+eng.+)',tmp.lower())
     print('raw_position = ',raw_position)
-    if len(raw_position)==1:
+    if len(raw_position)== 1:
         position = raw_position[0]
     else:
         position = tmp.split('\n')[1].lower()
