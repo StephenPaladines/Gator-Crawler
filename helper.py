@@ -52,7 +52,7 @@ def save_obj(obj, name):
 ###############################################################################
 
 def save_obj_json(obj, name):
-    with open(name + '.json', 'wb') as f:
+    with open(name + '.json', 'w') as f:
         json.dump(obj,f)
 
 ###############################################################################
