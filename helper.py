@@ -52,7 +52,7 @@ def save_obj(obj, name):
 ###############################################################################
 
 def save_obj_json(obj, name):
-    with open(name + '.json', 'w') as f:
+    with open(name + '.json', 'wb') as f:
         json.dump(obj,f)
 
 ###############################################################################
@@ -60,13 +60,20 @@ def save_obj_json(obj, name):
 def load_obj(name):
     with open(name + '.pkl', 'rb') as f:
         return pickle.load(f)
+
 ###############################################################################
 
+def load_obj_json(name):
+    with open(name + '.json', 'rb') as f:
+        return json.load(f)
+        
+###############################################################################
+# Alternating pauses to avoid being blacklisted
 def get_pause():
     return np.random.choice(range(4,6))
 
 ###############################################################################
-#utility function to get csv file from pickle.
+# Utility function to get csv file from pickle.
 def get_csv(pickle_obj):  ####&&&& Don' use it for new files
     my_dict = load_obj(pickle_obj)
     csv_filename = 'mycsvfile.csv'

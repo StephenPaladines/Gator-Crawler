@@ -23,23 +23,23 @@ warnings.filterwarnings("ignore", message="numpy.ufunc size changed")
 nltk.download('stopwords')
 # call the helper
 
-from helper import load_obj, get_csv, save_obj_json, init_driver, searchJobs, text_cleaner, get_pause, \
+from helper import load_obj_json, get_csv, save_obj_json, init_driver, searchJobs, text_cleaner, get_pause, \
 string_from_text
 
 # 1 - Load existing dictionary. Check for initial dictionary.
 # If empty, initialize
 
 try:
-	jobDict = load_obj('glassDoorDict')
-	link =    load_obj('glassDoorlink')
+	jobDict = load_obj_json('glassDoorDict')
+	link =    load_obj_json('glassDoorlink')
 except:
 	save_obj_json([], 'glassDoorlink')
 	save_obj_json({}, 'glassDoorDict')
 
-	jobDict = load_obj('glassDoorDict')
-	link =    load_obj('glassDoorlink')
+	jobDict = load_obj_json('glassDoorDict')
+	link =    load_obj_json('glassDoorlink')
 
-print('len(jobDict) = '+str(len(jobDict))+ ', len(link) = '+str(len(link)))
+print('len(jobDict) = '+ str(len(jobDict)) + ', len(link) = '+ str(len(link)))
 
 # 2 - Choose what you want to do:
 # get_link => Scraping for links and brief data,
@@ -144,18 +144,17 @@ if get_data:
 				#print('hq_state_code = ',hq_state_code)
 				jobDict[ids].append(hq_state_code)
 				print(' 2 = ',)
-				#size_low = int(re.findall('\d+',string_from_text('Size',tmp_txt))[0])
-				#size = string_from_text('Size',tmp_txt)
-				#print('size = ', size)
-				#size_high = int(re.findall('\d+',string_from_text('Size',tmp_txt))[1])
-				#print(' = ',)
-				#jobDict[ids].append(size)
-				#print(' 3 = ',)
-				#jobDict[ids].append(size_low)
-				#jobDict[ids].append(size_high)
+				size_low = int(re.findall('\d+',string_from_text('Size',tmp_txt))[0])
+				size = string_from_text('Size',tmp_txt)
+				print('size = ', size)
+				size_high = int(re.findall('\d+',string_from_text('Size',tmp_txt))[1])
+				print(' = ',)
+				jobDict[ids].append(size)
+				print(' 3 = ',)
+				jobDict[ids].append(size_low)
+				jobDict[ids].append(size_high)
 				industry = string_from_text('Industry',tmp_txt)
 				print('industry = ',industry)
-
 				jobDict[ids].append(industry)
 				print(' 4 = ',)
 				#jobDict[ids].append(revenue)
