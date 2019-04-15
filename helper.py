@@ -21,7 +21,7 @@ import re
 import csv
 import os.path
 import json
-#from collections import OrderedDict
+import jsonlines # Used for created ndjson objects used in ELK
 import warnings
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 warnings.filterwarnings("ignore", message="numpy.ufunc size changed")
@@ -53,7 +53,15 @@ def save_obj(obj, name):
 
 def save_obj_json(obj, name):
     with open(name + '.json', 'w') as f:
-        json.dump(obj,f)
+        json.dump(obj,f, indent = 4)
+
+###############################################################################
+
+def save_obj_ndjson(obj, name):
+    with jsonlines.open(name + '.json', mode ='w') as writer:     # Mode 'a' for appending
+        for keys in obj:
+            writer.write(obj[keys])
+        writer.close()
 
 ###############################################################################
 
@@ -64,7 +72,7 @@ def load_obj(name):
 ###############################################################################
 
 def load_obj_json(name):
-    with open(name + '.json', 'rb') as f:
+    with open(name + '.json', 'r') as f:
         return json.load(f)
         
 ###############################################################################
@@ -181,7 +189,6 @@ def searchJobs(browser, jobName, city = None, jobDict = None, link = None):
         browser.find_element_by_class_name('gd-btn-mkt').click()    # Seach job button
         sleep(5)
         
-
         # Find brief description
         for i in range(1): #20  ####&&&&
             try:
@@ -210,23 +217,38 @@ def searchJobs(browser, jobName, city = None, jobDict = None, link = None):
                     # do_stuff returns many misplaced entries.
                     # do_new_stuff uses regex to minimize bad data, it also splits up entries into more columns
                     # new tuple structure ('job_id',[rating, position, company, job_city, job_state_code, sal_low, sal_high])
-                    print('starting do_new_stuff')
+                    # print('starting do_new_stuff')
+                    # jobDataDict = do_new_stuff(newPost)
                     jobData = list(map(do_new_stuff, newPost))
-                    print("I'm out of do_new_stuff.")
-
-                    # Update job dictionary;
-                    # Convert tuple to dictionary. structure ('job_id',['rating',...]) -> {'job_id':['rating',...]}
-                    print('updating jobDict')
-                    tmp = dict((a[0],a[1]) for a in jobData)
-                    print('tmp created')
-                    jobDict.update(tmp) # Add a new entry with unique key job_id
+                    print(jobData[0])
+                    for a in jobData:
+                        jobDict[a[0]] = {
+                            'Rating' : a[1][0], 
+                            'Position': a[1][1], 
+                            'Company': a[1][2], 
+                            'City': a[1][3], 
+                            'State': a[1][4],
+                            'Salary Low' : a[1][5], 
+                            'Salary High' : a[1][6]
+                        } 
+                    # print("I'm out of do_new_stuff.")
+                    # # Update job dictionary;
+                    # # Convert tuple to dictionary. structure ('job_id',['rating',...]) -> {'job_id':['rating',...]}
+                    # print('updating jobDict')
+                    # tmp = dict((a[0],a[1]) for a in jobData)
+                    # print('tmp created')
+                    # jobDict.update(tmp) # Add a new entry with unique key job_id
+                    # Adding data to JSON
+                    #print(JobData + ' ' + JobData[0] + ' ' + jobData[1])
+                    # jobDict.update(jobData[0])
+                    # do_new_stuff()
                     # Finally find the links:
                     link_lst = list(map(lambda c: (c[0],c[1].find_element_by_tag_name('a').\
                         get_attribute('href')), newPost))
                     # Add the link to job dict
                     print('Adding to link')
-                    tmp = [jobDict[c[0]].append(c[1]) for c in link_lst]
-                    # Update link list. This will be used in get_data part.
+                    #tmp = [jobDict[c[0]].update(c[1]) for c in link_lst]
+                    #Update link list. This will be used in get_data part.
                     link += link_lst
                 browser.find_element_by_class_name('next').click() # Next page
                 try:
@@ -306,28 +328,32 @@ def do_stuff(a):
 ##############################################################################
 
 def do_new_stuff(a):
+    maxSalary = 0
+    minSalary = 0
     print("I'm in do_new_stuff")
-    if len(a) ==0:
+    if len(a) == 0:
         print('object is empty')
 
     tmp = a[1].text
     raw_rating = re.findall('\d\.\d',tmp )
     print('raw_rating = ',raw_rating)
-    if len(raw_rating)== 1:
+    if len(raw_rating) == 1:
         rating = raw_rating[0]
     else:
         rating = ''
     raw_sal_range = re.findall('\d+k',tmp )
     print('raw_sal_range = ',raw_sal_range)
-    if len(raw_sal_range)== 2:
+    if len(raw_sal_range) == 2:
         sal_low = int(raw_sal_range[0].replace('k',''))
         sal_high = int(raw_sal_range[1].replace('k',''))
+        if(maxSalary < sal_high): maxSalary = sal_high
+        if(minSalary > sal_low): minSalary = sal_low
     else:
-        sal_low = np.nan
-        sal_high = np.nan
+        sal_low = maxSalary
+        sal_high = minSalary
     raw_company = re.findall('.+–.+,.+',tmp)
     print('raw_company = ',raw_company)
-    if len(raw_company)== 1:
+    if len(raw_company) == 1:
         tt = raw_company[0].split('–')
         company = tt[0].strip()
         job_city = tt[1].split(',')[0].strip()
@@ -338,12 +364,10 @@ def do_new_stuff(a):
         job_state_code = ''
     raw_position = re.findall('(.+sci.+|.+ana.+|.+eng.+)',tmp.lower())
     print('raw_position = ',raw_position)
-    if len(raw_position)== 1:
+    if len(raw_position) == 1:
         position = raw_position[0]
     else:
         position = tmp.split('\n')[1].lower()
-    #return (a[0],tmp[0:4])
     print('Will go out of do_new_stuff.')
     return (a[0],[rating, position, company, job_city, job_state_code, sal_low, sal_high])
-
 ##############################################################################

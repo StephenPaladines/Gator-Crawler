@@ -23,30 +23,32 @@ warnings.filterwarnings("ignore", message="numpy.ufunc size changed")
 nltk.download('stopwords')
 # call the helper
 
-from helper import load_obj_json, get_csv, save_obj_json, init_driver, searchJobs, text_cleaner, get_pause, \
+from helper import load_obj_json, get_csv, save_obj_json, save_obj_ndjson, init_driver, searchJobs, text_cleaner, get_pause, \
 string_from_text
 
 # 1 - Load existing dictionary. Check for initial dictionary.
 # If empty, initialize
 
 try:
-	jobDict = load_obj_json('glassDoorDict')
+	# jobDict = load_obj_json('glassDoorDict')
+	jobDict = {}
 	link =    load_obj_json('glassDoorlink')
 except:
+	# save_obj_json({}, 'glassDoorDict')
 	save_obj_json([], 'glassDoorlink')
-	save_obj_json({}, 'glassDoorDict')
 
-	jobDict = load_obj_json('glassDoorDict')
+	# jobDict = load_obj_json('glassDoorDict')
 	link =    load_obj_json('glassDoorlink')
 
-print('len(jobDict) = '+ str(len(jobDict)) + ', len(link) = '+ str(len(link)))
+
+# print('len(jobDict) = '+ str(len(jobDict)) + ', len(link) = '+ str(len(link)))
 
 # 2 - Choose what you want to do:
 # get_link => Scraping for links and brief data,
 # get_data => Scraping for detailed data.
 
 
-get_link = False 
+get_link = True
 get_data = True 
 
 if get_link or get_data:
@@ -77,10 +79,10 @@ if get_link :
 		sleep(get_pause())				# Pause added to slow down process in order to avoid being blacklisted
 
 		# Initialize cities and jobs
-		jobName_lst = ['Data Scientist', 'Data Analyst','Data Engineer', 'Junior Developer', 'Software Developer']	#	List of predetermined jobs (update to ask the user)
+		jobName_lst = ['Data Scientist', 'Data Analyst', 'Data Engineer', 'Junior Developer', 'Software Developer', 'Web Developer', 'Analyst', 'IT', 'Technology', 'DevOps']	#	List of predetermined jobs (update to ask the user)
 		jobName = np.random.choice(jobName_lst)		#	jobName = 'Data Scientist' (Will chose a random position from array -> update by user preference)
 
-		city_lst = ['San Jose','New York','San Francisco','Detroit','Washington','Austin','Boston','Seattle','Chicago','Los Angeles',' ']#	List of predetermined cities (update to ask the user)
+		city_lst = ['San Jose','New York','San Francisco','Detroit','Washington','Austin','Boston','Seattle','Chicago','Los Angeles','Miami','Dallas','Tampa',' ']#	List of predetermined cities (update to ask the user)
 		city = np.random.choice(city_lst)			#	city = 'Miami'  (Will chose a random position from array -> update by user preference)
 
 		print('jobName = '+ jobName + ', city = '+ city)	# Confirm website input
@@ -98,7 +100,7 @@ if get_link :
 
 		# save dictionary and link
 
-		save_obj_json(update_jobDict, 'glassDoorDict')
+		# save_obj_json(update_jobDict, 'glassDoorDict')
 		save_obj_json(update_link, 'glassDoorlink')
 
 		iter_num += 1
@@ -109,9 +111,9 @@ if get_link :
 if get_data:
 	i = 5
 	print('len(link) = ' + str(len(link)))
-	while i > 0: # Originally 0, a hard coded solution for when only bad links are left.
+	while len(link) > 0: # Originally 0, a hard coded solution for when only bad links are left.
 		try:
-			i = i-1
+			i = i - 1
 			rnd_job = np.random.choice(range(len(link)))
 			ids = link[rnd_job][0]
 			page = link[rnd_job][1]
@@ -119,15 +121,15 @@ if get_data:
 			sleep(5)
 			
 			# Extract text (Not necessary for ELK solution)
-			desc_list = browser.find_element_by_xpath('//*[@id="JobDescriptionContainer"]/div[1]').text
-			print('desc_list '+ str(type(desc_list)))
-			description = text_cleaner(desc_list)
-			#print(desc_list)
-			#description = desc_list
-			#print('description '+ str(type(description)))
+			# desc_list = browser.find_element_by_xpath('//*[@id="JobDescriptionContainer"]/div[1]').text
+			# print('desc_list '+ str(type(desc_list)))
+			# description = text_cleaner(desc_list)
+			# print(desc_list)
+			# description = desc_list
+			# print('description '+ str(type(description)))
 
 			# jobDict structure {'job_id':['rating','position','company','salary','descr']}
-			jobDict[ids].append(description)
+			# jobDict[ids].update(description)
 
 			# Additional information about company (size, revenue, industry)
 			sleep(5)
@@ -140,26 +142,29 @@ if get_data:
 				print(headQuarter)
 				hq_city = headQuarter.split(',')[0]
 				#print('hq_city = ',hq_city)
-				jobDict[ids].append(hq_city)
 				print(' 1 = ',)
 				hq_state_code = headQuarter.split(',')[1]
 				#print('hq_state_code = ',hq_state_code)
-				jobDict[ids].append(hq_state_code)
 				print(' 2 = ',)
 				size_low = int(re.findall('\d+',string_from_text('Size',tmp_txt))[0])
 				size = string_from_text('Size',tmp_txt)
 				print('size = ', size)
 				size_high = int(re.findall('\d+',string_from_text('Size',tmp_txt))[1])
 				print(' = ',)
-				jobDict[ids].append(size)
+				jobDict[ids].update({'Size' : size})
 				print(' 3 = ',)
-				jobDict[ids].append(size_low)
-				jobDict[ids].append(size_high)
 				industry = string_from_text('Industry',tmp_txt)
-				print('industry = ',industry)
-				jobDict[ids].append(industry)
-				print(' 4 = ',)
-				#jobDict[ids].append(revenue)
+				jobDict[ids].update ({
+					'Industry' : industry,
+					'HQ' : hq_city,
+					'HQ State' : hq_state_code,
+					'Size' : size,
+					'Size Low' : size_low,
+					'Size High' : size_high,
+					'Industry' : industry
+				})
+				# print(' 4 = ',)
+				# jobDict[ids].update('HQ State:' + revenue)
 
 
 			except Exception as e:
@@ -171,8 +176,8 @@ if get_data:
 
 			# If everything is fine, save
 			print("Saving data......")
-			save_obj(jobDict, 'glassDoorDict')
-			save_obj(link, 'glassDoorlink')
+			save_obj_ndjson(jobDict, 'glassDoorDict')
+			save_obj_json(link, 'glassDoorlink')
 			
 			print('Scraped successfully ' + ids)
 
