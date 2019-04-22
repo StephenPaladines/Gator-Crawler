@@ -4,3 +4,4 @@ nose
 pandas
 nltk
 jsonlines
+geocoder

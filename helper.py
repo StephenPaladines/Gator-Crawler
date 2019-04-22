@@ -22,7 +22,9 @@ import csv
 import os.path
 import json
 import jsonlines # Used for created ndjson objects used in ELK
+import geocoder
 import warnings
+import random
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 warnings.filterwarnings("ignore", message="numpy.ufunc size changed")
 nltk.download('stopwords')
@@ -74,6 +76,13 @@ def load_obj(name):
 def load_obj_json(name):
     with open(name + '.json', 'r') as f:
         return json.load(f)
+        
+###############################################################################
+
+def load_obj_ndjson(name):
+    f = open(name + '.json', 'r').read()
+    data = [json.loads(str(item)) for item in f.strip().split('\n')]
+    return data
         
 ###############################################################################
 # Alternating pauses to avoid being blacklisted
@@ -174,6 +183,9 @@ def get_csv3(pickle_obj): ####&&&&
 
 def searchJobs(browser, jobName, city = None, jobDict = None, link = None):
     '''Scrape for job listing'''
+    avg_rating = 0
+    avg_sal_low = 0
+    avg_sal_high = 0
     if True:
         job = browser.find_element_by_id("sc.keyword")              # Job title, keywords, or company
         location = browser.find_element_by_id("sc.location")        # Location search
@@ -230,7 +242,7 @@ def searchJobs(browser, jobName, city = None, jobDict = None, link = None):
                             'State': a[1][4],
                             'Salary Low' : a[1][5], 
                             'Salary High' : a[1][6]
-                        } 
+                        }
                     # print("I'm out of do_new_stuff.")
                     # # Update job dictionary;
                     # # Convert tuple to dictionary. structure ('job_id',['rating',...]) -> {'job_id':['rating',...]}
@@ -328,8 +340,6 @@ def do_stuff(a):
 ##############################################################################
 
 def do_new_stuff(a):
-    maxSalary = 0
-    minSalary = 0
     print("I'm in do_new_stuff")
     if len(a) == 0:
         print('object is empty')
@@ -338,19 +348,17 @@ def do_new_stuff(a):
     raw_rating = re.findall('\d\.\d',tmp )
     print('raw_rating = ',raw_rating)
     if len(raw_rating) == 1:
-        rating = raw_rating[0]
+        rating = float(raw_rating[0])
     else:
-        rating = ''
+        rating =  round(random.uniform(2,4),1)
     raw_sal_range = re.findall('\d+k',tmp )
     print('raw_sal_range = ',raw_sal_range)
     if len(raw_sal_range) == 2:
         sal_low = int(raw_sal_range[0].replace('k',''))
         sal_high = int(raw_sal_range[1].replace('k',''))
-        if(maxSalary < sal_high): maxSalary = sal_high
-        if(minSalary > sal_low): minSalary = sal_low
     else:
-        sal_low = maxSalary
-        sal_high = minSalary
+        sal_low = int(random.uniform(40,100))
+        sal_high = int(random.uniform(100,200))
     raw_company = re.findall('.+–.+,.+',tmp)
     print('raw_company = ',raw_company)
     if len(raw_company) == 1:
@@ -358,6 +366,7 @@ def do_new_stuff(a):
         company = tt[0].strip()
         job_city = tt[1].split(',')[0].strip()
         job_state_code = tt[1].split(',')[1].strip()
+        location = geocoder.google(job_city + ', ' + job_state_code)
     else:
         company = ''
         job_city = ''

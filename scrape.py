@@ -15,6 +15,7 @@ from selenium.webdriver.common import action_chains, keys
 from selenium.common.exceptions import NoSuchElementException
 from nltk.corpus import stopwords
 import numpy as np
+import geocoder
 import sys
 import re
 import warnings
@@ -74,15 +75,16 @@ if get_link or get_data:
 
 if get_link :
 	iter_num = 0		 #	Variable counter for loop
-	while iter_num < 1:	 #	Iterate until complete
+	while iter_num < 15:	 #	Iterate until complete
 		print('Starting iteration number {}'.format(iter_num))
 		sleep(get_pause())				# Pause added to slow down process in order to avoid being blacklisted
 
 		# Initialize cities and jobs
-		jobName_lst = ['Data Scientist', 'Data Analyst', 'Data Engineer', 'Junior Developer', 'Software Developer', 'Web Developer', 'Analyst', 'IT', 'Technology', 'DevOps']	#	List of predetermined jobs (update to ask the user)
+		# jobName_lst = ['Data Scientist', 'Data Analyst', 'Data Engineer', 'Junior Developer', 'Software Developer', 'Web Developer', 'Analyst', 'IT', 'Technology', 'DevOps']
+		jobName_lst = ['Data Scientist']	#	List of predetermined jobs (update to ask the user)
 		jobName = np.random.choice(jobName_lst)		#	jobName = 'Data Scientist' (Will chose a random position from array -> update by user preference)
 
-		city_lst = ['San Jose','New York','San Francisco','Detroit','Washington','Austin','Boston','Seattle','Chicago','Los Angeles','Miami','Dallas','Tampa',' ']#	List of predetermined cities (update to ask the user)
+		city_lst = [' ']#	List of predetermined cities (update to ask the user)
 		city = np.random.choice(city_lst)			#	city = 'Miami'  (Will chose a random position from array -> update by user preference)
 
 		print('jobName = '+ jobName + ', city = '+ city)	# Confirm website input
