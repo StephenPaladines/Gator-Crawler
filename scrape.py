@@ -75,7 +75,7 @@ if get_link or get_data:
 
 if get_link :
 	iter_num = 0		 #	Variable counter for loop
-	while iter_num < 15:	 #	Iterate until complete
+	while iter_num < 1:	 #	Iterate until complete
 		print('Starting iteration number {}'.format(iter_num))
 		sleep(get_pause())				# Pause added to slow down process in order to avoid being blacklisted
 

@@ -202,7 +202,7 @@ def searchJobs(browser, jobName, city = None, jobDict = None, link = None):
         sleep(5)
         
         # Find brief description
-        for i in range(1): #20  ####&&&&
+        for i in range(15): #20  ####&&&&
             try:
                 # Extract useful classes
                 jobPosting = browser.find_elements_by_class_name('jl')
