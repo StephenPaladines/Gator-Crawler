@@ -15,7 +15,7 @@ from selenium.webdriver.common import action_chains, keys
 from selenium.common.exceptions import NoSuchElementException
 from nltk.corpus import stopwords
 import numpy as np
-import geocoder
+#import geocoder
 import sys
 import re
 import warnings

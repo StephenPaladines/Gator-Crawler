@@ -22,7 +22,7 @@ import csv
 import os.path
 import json
 import jsonlines # Used for created ndjson objects used in ELK
-import geocoder
+#import geocoder
 import warnings
 import random
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
@@ -264,7 +264,7 @@ def searchJobs(browser, jobName, city = None, jobDict = None, link = None):
                     link += link_lst
                 browser.find_element_by_class_name('next').click() # Next page
                 try:
-                    browser.find_element_by_xpath('//*[@id="JAModal"]/div/div[2]/div').click() # Pop up
+                    browser.find_element_by_xpath('//*[@id="JAModal"]/div/div[2]/div/div[1]').click() # Pop up
                 except:
                     pass
 
@@ -366,7 +366,7 @@ def do_new_stuff(a):
         company = tt[0].strip()
         job_city = tt[1].split(',')[0].strip()
         job_state_code = tt[1].split(',')[1].strip()
-        location = geocoder.google(job_city + ', ' + job_state_code)
+        #location = geocoder.google(job_city + ', ' + job_state_code)
     else:
         company = ''
         job_city = ''
